@@ -1,55 +1,24 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[19]:
-
-
-import flask as f
+from flask import Flask, render_template, request
 from pandas import DataFrame
 from pickle import load
 
-# # Create a web application and load contents of pickle file
 
-# In[21]:
-
-
-app = f.Flask(__name__)
+app = Flask(__name__)
 model = load(open("model.pkl", "rb"))
-
-
-# Load template on opening app home page
 
 
 @app.route("/")
 def home():
-    return f.render_template("index.html")
-
-
-# # Create predictions and show it on page
-
-# In[23]:
+    return render_template("index.html")
 
 
 @app.route("/predict", methods=["POST"])
 def predict():
     A = []
-    for i in f.request.form.values():
+    for i in request.form.values():
         A.append(int(i))
     predicted_profit = round(model.predict(DataFrame([[A[0], A[1]]]))[0][0],2)
-
-    """
-    # return f.render_template("index.html", pred= predicted_profit)
-    If i will use index.html so itmeans the output will be on the same page.
-    If i will use index.html and result.html  means output will print on the new page
-    
-    """
-
-    return f.render_template("result.html", pred= predicted_profit)
-
-# # Start the app
-
-# In[ ]:
-
+    return render_template("result.html", pred= predicted_profit)
 
 if __name__ == "__main__":
     app.run(debug=True)
